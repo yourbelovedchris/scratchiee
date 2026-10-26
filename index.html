@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For My Mommy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,600&family=Caveat:wght@600&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --leaf:#1d4a37;
+    --moss:#2f6b4f;
+    --mint:#d9f0e2;
+    --blush:#ffe1ea;
+    --rose:#ee5f8f;
+    --ink:#173a2b;
+  }
+  *{box-sizing:border-box;margin:0}
+  html,body{min-height:100%}
+  body{
+    background:
+      radial-gradient(circle at 15% 10%, #2f6b4f55 0, transparent 40%),
+      radial-gradient(circle at 90% 85%, #ee5f8f33 0, transparent 40%),
+      var(--leaf);
+    color:var(--blush);
+    font-family:'Nunito',system-ui,sans-serif;
+    padding:32px 16px 56px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  header{max-width:560px;margin:0 auto 26px;text-align:center}
+  h1{
+    font-family:'Fraunces',serif;font-style:italic;font-weight:600;
+    font-size:clamp(2.4rem,9vw,3.6rem);line-height:1.05;color:var(--blush);
+  }
+  .nick{font-family:'Caveat',cursive;font-size:1.5rem;color:#ffb3cc;margin-top:10px}
+  .hint{margin-top:14px;font-size:.95rem;color:var(--mint);opacity:.9}
+  .count{
+    display:inline-block;margin-top:14px;padding:6px 16px;border-radius:99px;
+    background:#0000002e;font-weight:800;font-size:.9rem;color:var(--mint)
+  }
+  .grid{
+    max-width:560px;margin:0 auto;display:grid;
+    grid-template-columns:repeat(2,1fr);gap:14px;
+  }
+  @media(min-width:520px){.grid{gap:18px}}
+  .card{
+    position:relative;aspect-ratio:1/1;border-radius:18px;overflow:hidden;
+    background:var(--blush);color:var(--ink);
+    box-shadow:0 8px 18px #00000040;
+    display:flex;align-items:center;justify-content:center;
+    padding:14px;text-align:center;
+  }
+  .card:nth-child(3n+2){background:var(--mint)}
+  .card p{
+    font-family:'Caveat',cursive;font-size:clamp(1.15rem,4.6vw,1.45rem);line-height:1.15;
+  }
+  .card.mid p{font-size:clamp(1rem,4vw,1.25rem)}
+  .card.long{grid-column:1/-1;aspect-ratio:auto;min-height:320px;padding:24px 22px}
+  .card.long p{font-size:clamp(1.05rem,4.2vw,1.4rem);line-height:1.2}
+  .card canvas{
+    position:absolute;inset:0;width:100%;height:100%;
+    touch-action:none;cursor:crosshair;transition:opacity .6s ease;
+  }
+  .card canvas.done{opacity:0;pointer-events:none}
+  .final{
+    max-width:560px;margin:34px auto 0;text-align:center;
+    padding:26px 20px;border-radius:20px;background:var(--blush);color:var(--ink);
+    display:none;box-shadow:0 10px 24px #00000040;
+  }
+  .final.show{display:block;animation:pop .5s ease both}
+  .final h2{font-family:'Fraunces',serif;font-style:italic;font-size:1.9rem;color:var(--rose)}
+  .final p{margin-top:10px;font-family:'Caveat',cursive;font-size:1.5rem;line-height:1.2}
+  @keyframes pop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+  @media(prefers-reduced-motion:reduce){.final.show{animation:none}.card canvas{transition:none}}
+
+  body{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+  .player{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
+    background:#0f2f23ee;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-top:1px solid #ffffff22;color:var(--blush);
+  }
+  .p-inner{max-width:560px;margin:0 auto}
+  .p-top,.p-bot{display:flex;align-items:center;gap:10px}
+  .p-bot{margin-top:6px;font-size:.78rem;font-weight:800;color:var(--mint)}
+  .p-bot span{min-width:2.6em;text-align:center;font-variant-numeric:tabular-nums}
+  .p-title{
+    flex:1;min-width:0;font-weight:800;font-size:.92rem;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .pbtn{
+    flex:none;width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;
+    background:var(--rose);color:#fff;display:grid;place-items:center;
+  }
+  .pbtn.ghost{background:transparent;color:var(--blush);width:36px;height:36px}
+  .pbtn:focus-visible,.player input:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+  .pbtn svg{width:20px;height:20px;fill:currentColor}
+  .player input[type=range]{accent-color:var(--rose);cursor:pointer;height:24px}
+  #seek{flex:1;min-width:0}
+  #vol{width:72px;flex:none}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>For My Mommy</h1>
+  <div class="nick">Mahal ko &middot; Wifey koo &middot; Love koo &middot; Mhie</div>
+  <p class="hint">Scratch each heart with your finger to see why I love you.</p>
+  <div class="count" id="count"></div>
+</header>
+
+<main class="grid" id="grid"></main>
+
+<section class="final" id="final">
+  <h2>That's all of them, Mhie.</h2>
+  <p>But there are a million more reasons, and I'll keep finding new ones every day. I love you, My Mommy.</p>
+</section>
+
+<div class="player" id="player">
+  <audio id="song" src="song.mp3" preload="auto" loop></audio>
+  <div class="p-inner">
+    <div class="p-top">
+      <button class="pbtn" id="pp" aria-label="Play"></button>
+      <div class="p-title">&#9835; Nahanap Kita - Amiel Sol</div>
+      <button class="pbtn ghost" id="mute" aria-label="Mute"></button>
+      <input type="range" id="vol" min="0" max="1" step="0.01" value="0.7" aria-label="Volume">
+    </div>
+    <div class="p-bot">
+      <span id="cur">0:00</span>
+      <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Seek">
+      <span id="dur">0:00</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== EDIT YOUR MESSAGES HERE (add or remove lines freely) ===== */
+const messages = [
+  "Your Smile, and Eyes Make my Day Whole Mommy ko:> 🩷",
+  "yk mommy ko, u make boring days, super duper adventurous, everytime mahal ko i love every bit of it! 🫂",
+  "I love the way you laugh sa corny joke ko sa personality ko na pag sinasabi ko (eheh ang funny ko, ahah) 🥺",
+  "You're MY ONE AND ONLY GIRL SPECIAL GIRL, AND FAVORITE PERSON EVER IN THE ENTIRE UNIVERSE 🌍 😚",
+  "You care somuch, even when you're tired, Mommy koo i appreciate you somuch 🥺🥺",
+  "Everytime being with you feels like home! WHEN I SAY THIS, I mean it! Huhu WAHHHH ILOVEYOUSOSOSOMHCH",
+  "MOMMY KOO YKK YOU'VE BEEN ALWAYS BEAUTIFUL INSIDE AND OUT ✨🥹",
+  "You even believe in me even when I dont:(, i really really appreciate you mahal ko, my sweet mommy 🫂🩷",
+  "I love our time together, kwentuhan whenever we laugh together is so memorable talaga mwehehhe:>",
+  "The way you look sometimes on the camera, like mommy ko, everytime I can't stop thinking na, oh my gosh this is my wifey, asawa ko, 😱😱!!",
+  "And mommy koo, thankyou for choosing me, everyday, everyweek and in the upcoming months🥹",
+  "Ikaw at ikawww lang, mommy ko, ILOVEYOUSOSOSOSOSOOSOSOSOOOOOOMUCH, Don't ever forget that no matter what happens, no matter the circumstances and situation, andito ako by your side, willing to listen and comfort you, and Yakapin ka ng mahigpit, if nobody every tell you mommy ko, i appreciate you, and i know you're fighting some battle you dont tell anybody, and im proud na you're strong, and kinakaya mo oh ikaw pa, im really proud of u 🫂🫂 ILOVEYOUUU MWAMWAA, i eepy goodnightt IMISSYOUU!! nagpuyat for this :>"
+];
+/* ================================================================ */
+
+const grid = document.getElementById('grid');
+const countEl = document.getElementById('count');
+const finalEl = document.getElementById('final');
+let revealed = 0;
+countEl.textContent = '0 of ' + messages.length + ' revealed';
+
+function paintCoating(canvas){
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  canvas.width = w*dpr; canvas.height = h*dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const g = ctx.createLinearGradient(0,0,w,h);
+  g.addColorStop(0,'#c9ced3'); g.addColorStop(.35,'#eef0f2');
+  g.addColorStop(.6,'#b8bec4'); g.addColorStop(1,'#dfe3e6');
+  ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+  for(let i=0;i<260;i++){
+    ctx.fillStyle = Math.random()>.5 ? 'rgba(255,255,255,.35)' : 'rgba(0,0,0,.07)';
+    ctx.fillRect(Math.random()*w, Math.random()*h, 2, 2);
+  }
+  ctx.font = `${Math.round(w*.4)}px serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(238,95,143,.75)';
+  ctx.fillText('\u2665', w/2, h/2 + w*.02);
+  return ctx;
+}
+
+function clearedFraction(canvas, ctx){
+  const {width:w, height:h} = canvas;
+  const data = ctx.getImageData(0,0,w,h).data;
+  let clear = 0, total = 0;
+  for(let i=3;i<data.length;i+=64){ total++; if(data[i]===0) clear++; }
+  return clear/total;
+}
+
+function finish(canvas){
+  if(canvas.classList.contains('done')) return;
+  canvas.classList.add('done');
+  revealed++;
+  countEl.textContent = revealed + ' of ' + messages.length + ' revealed';
+  if(revealed === messages.length){
+    finalEl.classList.add('show');
+    setTimeout(()=>finalEl.scrollIntoView({behavior:'smooth',block:'center'}),700);
+  }
+}
+
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(()=>messages.forEach(text=>{
+  const card = document.createElement('div');
+  card.className = 'card' + (text.length > 160 ? ' long' : text.length > 85 ? ' mid' : '');
+  card.innerHTML = '<p></p><canvas></canvas>';
+  card.querySelector('p').textContent = text;
+  grid.appendChild(card);
+
+  const canvas = card.querySelector('canvas');
+  let ctx = paintCoating(canvas);
+  let drawing = false, last = null;
+
+  const pos = e => {
+    const r = canvas.getBoundingClientRect();
+    return {x:e.clientX - r.left, y:e.clientY - r.top};
+  };
+  const scratch = p => {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineCap = ctx.lineJoin = 'round';
+    ctx.lineWidth = 34;
+    ctx.beginPath();
+    ctx.moveTo((last||p).x, (last||p).y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    last = p;
+  };
+
+  canvas.addEventListener('pointerdown', e=>{
+    drawing = true; last = null;
+    canvas.setPointerCapture(e.pointerId);
+    scratch(pos(e));
+  });
+  canvas.addEventListener('pointermove', e=>{ if(drawing) scratch(pos(e)); });
+  const end = ()=>{
+    if(!drawing) return;
+    drawing = false; last = null;
+    if(clearedFraction(canvas, ctx) > 0.55) finish(canvas);
+  };
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+}));
+
+/* ===== MUSIC PLAYER ===== */
+(function(){
+  const a = document.getElementById('song');
+  const pp = document.getElementById('pp');
+  const muteBtn = document.getElementById('mute');
+  const vol = document.getElementById('vol');
+  const seek = document.getElementById('seek');
+  const cur = document.getElementById('cur');
+  const dur = document.getElementById('dur');
+  const player = document.getElementById('player');
+
+  const ICON = {
+    play:'<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
+    pause:'<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>',
+    vol:'<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>',
+    mute:'<svg viewBox="0 0 24 24"><path d="M16.5 12A4.5 4.5 0 0 0 14 8v2.2l2.5 2.5V12zM19 12a6.9 6.9 0 0 1-.9 3.4l1.5 1.5A8.9 8.9 0 0 0 21 12a9 9 0 0 0-7-8.8v2.1A7 7 0 0 1 19 12zM4.3 3 3 4.3 7.7 9H3v6h4l5 5v-6.7l4.2 4.2c-.7.5-1.4.9-2.2 1.1v2.1a9 9 0 0 0 3.6-1.8l2.1 2.1 1.3-1.3L4.3 3zM12 4 9.9 6.1 12 8.2V4z"/></svg>'
+  };
+  const fmt = t => {
+    if(!isFinite(t)) return '0:00';
+    const m = Math.floor(t/60), s = Math.floor(t%60);
+    return m + ':' + String(s).padStart(2,'0');
+  };
+
+  a.volume = parseFloat(vol.value);
+  let seeking = false;
+  let userPaused = false;   // true once she/he pauses on purpose
+
+  function paintPlay(){
+    pp.innerHTML = a.paused ? ICON.play : ICON.pause;
+    pp.setAttribute('aria-label', a.paused ? 'Play' : 'Pause');
+  }
+  function paintVol(){
+    const silent = a.muted || a.volume === 0;
+    muteBtn.innerHTML = silent ? ICON.mute : ICON.vol;
+    muteBtn.setAttribute('aria-label', silent ? 'Unmute' : 'Mute');
+  }
+  paintPlay(); paintVol();
+
+  function tryPlay(){
+    const p = a.play();
+    if(p && p.catch) p.catch(()=>{});
+  }
+
+  pp.addEventListener('click', ()=>{
+    if(a.paused){ userPaused = false; tryPlay(); }
+    else { userPaused = true; a.pause(); }
+  });
+  muteBtn.addEventListener('click', ()=>{
+    if(a.muted || a.volume === 0){
+      a.muted = false;
+      if(a.volume === 0){ a.volume = 0.7; vol.value = 0.7; }
+    } else { a.muted = true; }
+    paintVol();
+  });
+  vol.addEventListener('input', ()=>{
+    a.volume = parseFloat(vol.value);
+    if(a.volume > 0) a.muted = false;
+    paintVol();
+  });
+
+  a.addEventListener('play', paintPlay);
+  a.addEventListener('pause', paintPlay);
+  a.addEventListener('loadedmetadata', ()=>{ dur.textContent = fmt(a.duration); });
+  a.addEventListener('durationchange', ()=>{ dur.textContent = fmt(a.duration); });
+  a.addEventListener('timeupdate', ()=>{
+    if(seeking || !a.duration) return;
+    seek.value = (a.currentTime / a.duration) * 1000;
+    cur.textContent = fmt(a.currentTime);
+  });
+
+  seek.addEventListener('input', ()=>{
+    seeking = true;
+    if(a.duration) cur.textContent = fmt((seek.value/1000) * a.duration);
+  });
+  seek.addEventListener('change', ()=>{
+    if(a.duration) a.currentTime = (seek.value/1000) * a.duration;
+    seeking = false;
+  });
+
+  /* Autoplay: browsers block sound until the first tap, so try now,
+     and if blocked, start on her first touch anywhere on the page. */
+  tryPlay();
+  const starters = ['pointerup','touchend','click','keydown'];
+  function firstTouch(e){
+    if(player.contains(e.target)) return;   // player buttons handle themselves
+    if(!userPaused && a.paused) tryPlay();
+    if(!a.paused) starters.forEach(ev=>document.removeEventListener(ev, firstTouch, true));
+  }
+  starters.forEach(ev=>document.addEventListener(ev, firstTouch, true));
+})();
+</script>
+</body>
+</html>
